@@ -18,10 +18,11 @@ sap.ui.define([
 
         _onRouteMatched: function (oEvent) {
           var routeId = oEvent.getParameter("arguments").ID;
-          if (routeId === "Page1" || routeId === undefined || routeId === "") {
-            this.onFilterBarClear();
-            this.onSearch();
-          }
+          // if (routeId === "Page1" || routeId === undefined || routeId === "") {
+          //   this.onFilterBarClear();
+          //   this.onSearch();
+          // }
+          this.onSearch();
         },
 
         _getRequestData: function (statusKey, countType) {
@@ -203,7 +204,12 @@ sap.ui.define([
         },
 
         onClickofItem: function (oEvent) {
-            var pafNo = oEvent.getParameter("rowContext").getObject().Pafno;
+            var oRowContext = oEvent.getParameter("rowContext");
+            if (!oRowContext) {
+              return;
+            }
+
+            var pafNo = oRowContext.getObject().Pafno;
             this.oRouter = this.getOwnerComponent().getRouter();
             this.oRouter.navTo("page2", {
               pafID: pafNo,

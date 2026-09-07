@@ -149,12 +149,12 @@
                                     <Text text="{path:'JSONModelForTable&gt;Validity', formatter:'.formatter.removeLeadingZeros'}"/>
                                 </ui:template>
                             </ui:Column>
-                            <ui:Column width="auto" hAlign="End" demandPopin="true">
+                            <!-- <ui:Column width="auto" hAlign="End" demandPopin="true">
                                 <Text text="GM%"/>
                                 <ui:template>
                                     <tnt:InfoLabel text="{JSONModelForTable&gt;Wgrossmargper} %" renderMode="Loose" colorScheme="{parts:['JSONModelForTable&gt;Wgrossmargper'], formatter:'.formatter.getGMColor'}"/>
                                 </ui:template>
-                            </ui:Column>
+                            </ui:Column> -->
                             <ui:Column width="auto" hAlign="Center" demandPopin="true">
                                 <Text text="Pending At"/>
                                 <ui:template>

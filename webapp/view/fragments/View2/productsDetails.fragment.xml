@@ -23,6 +23,10 @@
                         press="onShowAttachmentsLinkPress"
                     />
                     <!-- End: Attach001 -->
+                    <ToolbarSpacer />
+                
+                    <Button text="Generate" icon="sap-icon://cause" press="onGenerate" type="Attention"
+                        visible="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
                 </Toolbar>
             </headerToolbar>
             <columns>
@@ -76,8 +80,14 @@
                     <Text text="Current Volume" />
                 </Column>
 
-                <Column minScreenWidth="Tablet" demandPopin="true" hAlign="End" >
-                    <Text text="Discount" />
+                <Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center" 
+                    visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? true: false}" >
+                    <Text text="Discount(%)" />
+                </Column>
+
+                <Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center" 
+                    visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? false: true}" >
+                    <Text text="Discount(Box)" />
                 </Column>
 
                 <Column minScreenWidth="Desktop" demandPopin="true" hAlign="Center" width="7rem" >
@@ -148,9 +158,19 @@
                         <Text text="{ProductModel>Szcm}" />
                         <Text text="{ProductModel>Design}" />
 
-                        <Text visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? true: false}" text="{ProductModel>Commboxp}" />
-
-                        <Text visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? false: true}" text="{ProductModel>Commbox}" />
+                        <VBox visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? true: false}">
+                            <Input value="{ProductModel>Commboxp}" change="onORCInputChange"
+                                visible="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
+                            <Text text="{ProductModel>Commboxp}" 
+                                visible="{= ${oRequestModel>/Status} !== 'P' || (${oRequestModel>/Role} !== 'CB' &amp;&amp; ${oRequestModel>/Role} !== '') }" />
+                        </VBox>
+                        
+                        <VBox visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? false: true}">
+                            <Input value="{ProductModel>Commbox}" change="onORCInputChange"
+                                visible="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
+                            <Text text="{ProductModel>Commbox}" 
+                                visible="{= ${oRequestModel>/Status} !== 'P' || (${oRequestModel>/Role} !== 'CB' &amp;&amp; ${oRequestModel>/Role} !== '') }" />
+                        </VBox>
 
                         <!-- <Text text="{ProductModel>Sname}" /> -->
                         <Text visible="false" text="{ProductModel>Volume}" />
@@ -159,7 +179,21 @@
                         <Text text="{ProductModel>Mvgr5}" />
                         <Text text="{ProductModel>Totalvolume}" />
                         <Text text="{ProductModel>CurVolFt}" />
-                        <Text text="{parts:['ProductModel>Discount', 'ProductModel>Discountb'], formatter:'.formatter.getDiscount' }"  />
+
+                        <VBox visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? true: false}">
+                            <Input value="{ProductModel>Discount}" change="onORCInputChange"
+                                visible="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
+                            <Text text="{parts:['ProductModel>Discount', 'ProductModel>Discountb'], formatter:'.formatter.getDiscount' }"
+                                visible="{= ${oRequestModel>/Status} !== 'P' || (${oRequestModel>/Role} !== 'CB' &amp;&amp; ${oRequestModel>/Role} !== '') }" />
+                        </VBox>
+
+                        <VBox visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? false: true}">
+                            <Input value="{ProductModel>Discount}" change="onORCInputChange"
+                                visible="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
+                            <Text text="{parts:['ProductModel>Discount', 'ProductModel>Discountb'], formatter:'.formatter.getDiscount' }"
+                                visible="{= ${oRequestModel>/Status} !== 'P' || (${oRequestModel>/Role} !== 'CB' &amp;&amp; ${oRequestModel>/Role} !== '') }" />
+                        </VBox>
+
                         <Text text="{ProductModel>Netexsqft}" />
                         <Text text="{ProductModel>AvgBill}" />
                         <Text text="{ProductModel>LastBill}" />
@@ -176,7 +210,7 @@
                         <!-- <Text text="{path:'ProductModel>ApprovedBuyingprice'}" /> -->
                         <!-- <Text text="{path:'ProductModel>Grossmargper'}" /> -->
                         <TextArea value="{ProductModel>DhRemarkItem}" liveChange="onSbremarkTextAreaLiveChange"
-                            editable="{= ${oRequestModel>/Status} === 'P' }" />
+                            editable="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
                         <!-- Start: Remarkcol001 -->
                         <!-- <Text text="{path:'ProductModel>Premark'}" /> -->
                         <!-- End: Remarkcol001 -->

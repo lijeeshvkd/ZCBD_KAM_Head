@@ -41,6 +41,9 @@ sap.ui.define([
                 var dataModelForAttachments = this.getOwnerComponent().getModel("attachments").getData();
                 this.getView().setModel(new JSONModel(dataModelForAttachments), "LocalJSONModelForAttachment");
                 // End: Attach001
+
+                var oDetailModel = new JSONModel({isGenerated: false});
+                this.getView().setModel(oDetailModel, "DetailModel");
             },
 
             // Attach route matched method
@@ -172,6 +175,11 @@ sap.ui.define([
                         });
                     }.bind(this)
                 });
+            },
+
+            onORCInputChange: function (oEvent) {
+                var oDetailModel = this.getView().getModel("DetailModel");
+                oDetailModel.setProperty("/isGenerated", false);
             },
 
             onSourceHelp: function (oEvent) {
@@ -470,6 +478,19 @@ sap.ui.define([
                 this._sendPayload(payload, "Approved");
             },
 
+            onGenerate: function () {
+                var proj = this.getView().getModel("oRequestModel").getProperty("/Proj");
+
+                var payload = {
+                    Pafno: '',
+                    Action: "GENERATE",
+                    Proj: proj,
+                    NAV_VH_ITEM_PRODUCT: [],
+                };
+
+                this._sendPayload(payload, "Generated");
+            },
+
             _sendPayload: function (payload, sAction) {
 
                 payload.Pafno = this.getView().getModel("oRequestModel").getData().Pafno;
@@ -504,12 +525,20 @@ sap.ui.define([
 
                 this.getOwnerComponent().getModel().create('/ZPAF_VH_HEADERSet', payload, {
                     success: function (oData, response) {
+                        var oProductModel = this.getView().getModel("ProductModel");
+                        if (oData.NAV_VH_ITEM_PRODUCT && oData.NAV_VH_ITEM_PRODUCT.results) {
+                            oProductModel.setData(oData.NAV_VH_ITEM_PRODUCT.results);
+                            oProductModel.refresh(true);
+                        }
 
+                        this.getView().getModel("DetailModel").setProperty("/isGenerated", true);
                         MessageBox.success("PAF " + sAction + " Successfully", {
                             actions: [sap.m.MessageBox.Action.OK],
                             onClose: function (oAction) {
-                                this.oRouter = this.getOwnerComponent().getRouter();
-                                this.oRouter.navTo("page1", {});
+                                if (sAction !== "Generated") {
+                                    this.oRouter = this.getOwnerComponent().getRouter();
+                                    this.oRouter.navTo("page1", {});
+                                }
                             }.bind(this)
                         });
 

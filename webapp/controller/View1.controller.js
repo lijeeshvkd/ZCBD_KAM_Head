@@ -18,10 +18,11 @@ sap.ui.define([
 
         _onRouteMatched: function (oEvent) {
           var routeId = oEvent.getParameter("arguments").ID;
-          if (routeId === "Page1" || routeId === undefined || routeId === "") {
-            this.onFilterBarClear();
-            this.onSearch();
-          }
+          // if (routeId === "Page1" || routeId === undefined || routeId === "") {
+          //   this.onFilterBarClear();
+          //   this.onSearch();
+          // }
+          this.onSearch();
         },
 
         _getRequestData: function (statusKey, countType) {
@@ -102,6 +103,13 @@ sap.ui.define([
                     response.results = [];
                   }
                 }
+
+                if (this.roleKey) {
+                  response.results = response.results.filter(function (result) {
+                    return String(result.Role || '').trim().toUpperCase() === this.roleKey.toUpperCase();
+                  }.bind(this));
+                }
+
                 this.getView().setBusy(false);
                 if (countType === "count") {
                   switch (statusKey) {
@@ -147,12 +155,13 @@ sap.ui.define([
           this.salesOfficeKey = this.getView().byId("id.SalesOffice.Input").getValue();
           this.divisionKey = this.getView().byId("id.Division.ComboBox").getSelectedKey();
           this.pafNumberValue = this.getView().byId("id.PafNo.Input").getValue();
+          this.roleKey = this.getView().byId("id.Role.ComboBox").getSelectedKey();
           this.getView().byId("idIconTabBar").setSelectedKey("All");
           this.getView().byId("id.orderNumber.Input").setValue("");
           this._getRequestData("P", "count");
           this._getRequestData("A", "count");
           this._getRequestData("R", "count");
-          this._getRequestData("DL", "count");
+          // this._getRequestData("DL", "count");
           this._getRequestData("", "count");
           this._getRequestData("", "tableData");
         },
@@ -161,10 +170,12 @@ sap.ui.define([
           this.getView().byId("id.SalesOffice.Input").setValue("");
           this.getView().byId("id.Division.ComboBox").setSelectedKey("");
           this.getView().byId("id.PafNo.Input").setValue("");
+          this.getView().byId("id.Role.ComboBox").setSelectedKey("");
           this.getView().getModel("dateRange").setProperty("/start", "");
           this.getView().getModel("dateRange").setProperty("/end", "");
           this.divisionKey = "";
           this.pafNumberValue = "";
+          this.roleKey = "";
         },
 
         _onFilterSelect: function (oEvent) {
@@ -203,7 +214,12 @@ sap.ui.define([
         },
 
         onClickofItem: function (oEvent) {
-            var pafNo = oEvent.getParameter("rowContext").getObject().Pafno;
+            var oRowContext = oEvent.getParameter("rowContext");
+            if (!oRowContext) {
+              return;
+            }
+
+            var pafNo = oRowContext.getObject().Pafno;
             this.oRouter = this.getOwnerComponent().getRouter();
             this.oRouter.navTo("page2", {
               pafID: pafNo,

@@ -22,7 +22,7 @@ sap.ui.define([
           //   this.onFilterBarClear();
           //   this.onSearch();
           // }
-          this.onSearch();
+          // this.onSearch();
         },
 
         _getRequestData: function (statusKey, countType) {
@@ -136,6 +136,7 @@ sap.ui.define([
                   }
                 } else {
                   var tableResults = response.results;
+                  this._allTableResults = tableResults.slice();
                   this.getView().setModel(new JSONModel(tableResults), "JSONModelForTable");
                 }
                 this.getView().getModel("count").refresh(true);
@@ -156,6 +157,23 @@ sap.ui.define([
           this.divisionKey = this.getView().byId("id.Division.ComboBox").getSelectedKey();
           this.pafNumberValue = this.getView().byId("id.PafNo.Input").getValue();
           this.roleKey = this.getView().byId("id.Role.ComboBox").getSelectedKey();
+          var oDateRange = this.getView().getModel("dateRange");
+          var sStartDate = oDateRange.getProperty("/start");
+          var sEndDate = oDateRange.getProperty("/end");
+
+          if (!this.salesOfficeKey) {
+            this.getView().byId("id.SalesOffice.Input").setValueState("Error");
+            MessageBox.error("Please enter Sales Office");
+            return;
+          }
+          if (!sStartDate || !sEndDate) {
+            this.getView().byId("id.Date.Range").setValueState("Error");
+            MessageBox.error("Please select a complete Date range");
+            return;
+          }
+
+          this.getView().byId("id.SalesOffice.Input").setValueState("None");
+          this.getView().byId("id.Date.Range").setValueState("None");
           this.getView().byId("idIconTabBar").setSelectedKey("All");
           this.getView().byId("id.orderNumber.Input").setValue("");
           this._getRequestData("P", "count");
@@ -180,24 +198,39 @@ sap.ui.define([
 
         _onFilterSelect: function (oEvent) {
           var selectedKey = oEvent.getParameter("key");
+          var oTableModel = this.getView().getModel("JSONModelForTable");
+          var aTableResults = this._allTableResults || (oTableModel && oTableModel.getData()) || [];
+          var statusByTab = {
+            Pending: "P",
+            Approved: "A",
+            Delayed: "D",
+            Rejected: "R",
+            Deleted: "DL"
+          };
+
+          if (oTableModel) {
+            var sStatus = statusByTab[selectedKey];
+            var aFilteredResults = sStatus
+              ? aTableResults.filter(function (result) {
+                  return String(result.Status || "").toUpperCase() === sStatus;
+                })
+              : aTableResults;
+            oTableModel.setData(aFilteredResults);
+            oTableModel.refresh(true);
+          }
+
           if (selectedKey === "All") {
-            this._getRequestData("", "tableData");
             this.getView().byId("id.FilterBar").setVisible(true);
           } else if (selectedKey === "Pending") {
-            this._getRequestData("P", "tableData");
-            this.getView().byId("id.FilterBar").setVisible(false);
+            this.getView().byId("id.FilterBar").setVisible(true);
           } else if (selectedKey === "Approved") {
-            this._getRequestData("A", "tableData");
-            this.getView().byId("id.FilterBar").setVisible(false);
+            this.getView().byId("id.FilterBar").setVisible(true);
           } else if (selectedKey === "Delayed") {
-            this._getRequestData("D", "tableData");
-            this.getView().byId("id.FilterBar").setVisible(false);
+            this.getView().byId("id.FilterBar").setVisible(true);
           } else if (selectedKey === "Rejected") {
-            this._getRequestData("R", "tableData");
-            this.getView().byId("id.FilterBar").setVisible(false);
+            this.getView().byId("id.FilterBar").setVisible(true);
           } else if (selectedKey === "Deleted") {
-            this._getRequestData("DL", "tableData");
-            this.getView().byId("id.FilterBar").setVisible(false);
+            this.getView().byId("id.FilterBar").setVisible(true);
           }
         },
 
@@ -388,7 +421,7 @@ sap.ui.define([
           if (suggestValue) {
             this.getView().setBusy(true);
             this.getView()
-              .getModel()
+              .getModel("ZCUSTOMER_AUTOMATIONDISCOUNT_SRV")
               .read(servicePath, {
                 filters: suggestFilters,
                 success: function (suggestionResponse) {

@@ -51,7 +51,7 @@
                     <Text text="ORC(%)" />
                 </Column>
 
-                <Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center" 
+                <Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center" width="7rem"
                     visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? false: true}" >
                     <Text text="ORC(Box)" />
                 </Column>
@@ -91,6 +91,10 @@
                 </Column>
 
                 <Column minScreenWidth="Desktop" demandPopin="true" hAlign="Center" width="7rem" >
+                    <Text text="Ex Factory" />
+                </Column>
+
+                <Column minScreenWidth="Desktop" demandPopin="true" hAlign="Center" width="7rem" >
                     <Text text="Net Ex Factory(Sqft)" />
                 </Column>
 
@@ -106,9 +110,9 @@
                     <Text text="Min Bill Price-L3M_Region" />
                 </Column>
 
-                <Column hAlign="Center">
+                <!-- <Column hAlign="Center">
                     <Text text="Freight" />
-                </Column>
+                </Column> -->
                 
                 <!-- <Column hAlign="Center">
                     <Text text="Revised freight" />
@@ -188,18 +192,19 @@
                         </VBox>
 
                         <VBox visible="{=${oRequestModel>/Vtweg} === '15' || ${oRequestModel>/Vtweg} === '19' || ${oRequestModel>/Vtweg} === '25' || ${oRequestModel>/Vtweg} === '29'  ? false: true}">
-                            <Input value="{ProductModel>Discount}" change="onORCInputChange"
+                            <Input value="{ProductModel>Discountb}" change="onORCInputChange"
                                 visible="{= ${oRequestModel>/Status} === 'P' &amp;&amp; (${oRequestModel>/Role} === 'CB' || ${oRequestModel>/Role} === '') }" />
                             <Text text="{parts:['ProductModel>Discount', 'ProductModel>Discountb'], formatter:'.formatter.getDiscount' }"
                                 visible="{= ${oRequestModel>/Status} !== 'P' || (${oRequestModel>/Role} !== 'CB' &amp;&amp; ${oRequestModel>/Role} !== '') }" />
                         </VBox>
 
+                        <Text text="{ProductModel>Exfacft}" />
                         <Text text="{ProductModel>Netexsqft}" />
                         <Text text="{ProductModel>AvgBill}" />
                         <Text text="{ProductModel>LastBill}" />
                         <Text text="{ProductModel>MinBill}" />
 
-                        <Text text="{ProductModel>Frghtsqft}" />
+                        <!-- <Text text="{ProductModel>Frghtsqft}" /> -->
                         <!-- <Text text="{ProductModel>ApprovedFrightprice}" /> -->
 
                         <!-- <Text text="{ProductModel>Discount}" />  -->
